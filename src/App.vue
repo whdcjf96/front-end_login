@@ -1,32 +1,60 @@
 <template>
   <div id="app">
-    <nav>
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
+    <nav class="navbar navbar-expand navbar-dark bg-dark">
+      <router-link to="/" class="navbar-brand">bezKoder</router-link>
+      <div class="navbar-nav mr-auto">
+        <li class="nav-item">
+          <router-link to="/tutorials" class="nav-link">Tutorials</router-link>
+        </li>
+        <li class="nav-item">
+          <router-link to="/add" class="nav-link">Add</router-link>
+        </li>
+      </div>
+
+      <!-- 로그인 태그 추가 -->
+      <div v-if="currentUser" class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <router-link to="/profile" class="nav-link">
+            <!--            웹 아이콘 추가-->
+            <font-awesome-icon icon="user"></font-awesome-icon>
+            {{ currentUser.username }}
+          </router-link>
+        </li>
+        <li class="nav-item">
+          <a href @click.prevent="logOut" class="nav-link">
+            <font-awesome-icon icon="sign-out-alt"></font-awesome-icon>
+            LogOut
+          </a>
+        </li>
+      </div>
     </nav>
-    <router-view/>
+
+    <div class="container mt-3">
+      <router-view />
+    </div>
   </div>
 </template>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<script>
+export default {
+  //html에서 변수처럼 호출 : 뒤에 () 붙이면 안됨 예)currentUser
+  computed:{
+    currentUser(){
+      //공유 저장소의 전역변수(공유변수 : user)
+      //자동으로 로그인되었으면 loggedIn = true, user객체 있음
+      //아니면 loggedIn = false, user객체 = null
+      return this.$store.state.auth.user;
+    }
+  },
 
-nav {
-  padding: 30px;
-}
-
-nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-nav a.router-link-exact-active {
-  color: #42b983;
-}
-</style>
+  //html에서 함수처럼 호출 : 뒤에 () 붙음 예)logOut()
+  methods:{
+    logOut(){
+      //dispatch 호출하는 메소드 : actions 있는 메소드를 호출함
+      this.$store.dispatch("auth/logout");
+    //  로그아웃 후 이동할 페이지 지정
+      this.$router.push("/login");
+    }
+  }
+};
+</script>
